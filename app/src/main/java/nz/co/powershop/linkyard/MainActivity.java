@@ -1,39 +1,79 @@
 package nz.co.powershop.linkyard;
 
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import nz.co.powershop.linkyard.model.AuthenticationRequest;
+import nz.co.powershop.linkyard.model.LoginResponse;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements LoginFragment.OnLoginListener,
+        Callback<LoginResponse> {
+
+    private static final String TAG = MainActivity.class.getSimpleName();
+
+    @Inject
+    @Named("linkyardService")
+    LinkyardService linkyardService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-    }
 
+        ((LinkyardApplication) getApplication()).getObjectGraph().inject(this);
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        setContentView(R.layout.activity_base);
+        if (savedInstanceState == null) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.container, LoginFragment.newInstance())
+                    .commit();
         }
 
-        return super.onOptionsItemSelected(item);
     }
+
+
+    @Override
+    public void onLogin(String username, String password) {
+        AuthenticationRequest request = new AuthenticationRequest(username, password);
+        linkyardService.login(request, this);
+    }
+
+
+    @Override
+    public void success(LoginResponse loginResponse, Response response) {
+
+        Log.d(TAG, loginResponse.getInfo());
+        if (loginResponse.isSuccess()) {
+
+            // Save token.
+            PreferenceManager.getDefaultSharedPreferences(this)
+                    .edit()
+                    .putString("token", loginResponse.getData().getToken())
+                    .commit();
+
+            setResult(RESULT_OK);
+
+            finish();
+        } else {
+            Toast.makeText(this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void failure(RetrofitError error) {
+        Toast.makeText(this, "Could not connect to server.", Toast.LENGTH_SHORT).show();
+    }
+
 }
