@@ -1,9 +1,11 @@
 package nz.co.powershop.linkyard;
 
 import nz.co.powershop.linkyard.model.AuthenticationRequest;
+import nz.co.powershop.linkyard.model.GetArticlesResponse;
+import nz.co.powershop.linkyard.model.GetNewArticleResponse;
 import nz.co.powershop.linkyard.model.LoginResponse;
 import nz.co.powershop.linkyard.model.LogoutResponse;
-import nz.co.powershop.linkyard.model.NewArticleResponse;
+import nz.co.powershop.linkyard.model.PostArticleRequest;
 import retrofit.Callback;
 import retrofit.http.Body;
 import retrofit.http.DELETE;
@@ -27,5 +29,12 @@ public interface LinkyardService {
 
     @GET("/api/links/new")
     void newArticle(@Query("auth_token") String token, @Query("url") String url,
-                    Callback<NewArticleResponse> callback);
+                    Callback<GetNewArticleResponse> callback);
+
+    @POST("/api/links")
+    void newArticle(@Query("auth_token") String token, @Body PostArticleRequest request,
+                    Callback<Void> callback);
+
+    @GET("/api/links")
+    void getArticles(@Query("auth_token") String token, Callback<GetArticlesResponse> callback);
 }

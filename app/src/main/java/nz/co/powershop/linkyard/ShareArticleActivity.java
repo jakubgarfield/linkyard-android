@@ -13,8 +13,10 @@ import android.widget.Toast;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import nz.co.powershop.linkyard.model.GetNewArticleResponse;
+import nz.co.powershop.linkyard.model.LinkSubmission;
 import nz.co.powershop.linkyard.model.LogoutResponse;
-import nz.co.powershop.linkyard.model.NewArticleResponse;
+import nz.co.powershop.linkyard.model.PostArticleRequest;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -45,27 +47,36 @@ public class ShareArticleActivity extends ActionBarActivity
         }
 
         if (PreferenceManager.getDefaultSharedPreferences(this).contains("token")) {
-            final String token = PreferenceManager.getDefaultSharedPreferences(this)
-                    .getString("token", null);
-            final String url = getIntent().getStringExtra(Intent.EXTRA_TEXT);
-            linkyardService.newArticle(token, url, new Callback<NewArticleResponse>() {
-
-                @Override
-                public void success(NewArticleResponse newArticleResponse, Response response) {
-                    setTitle(newArticleResponse.getLinkSubmission().getUrl());
-                }
-
-                @Override
-                public void failure(RetrofitError error) {
-                    Log.w(TAG, error.getLocalizedMessage(), error);
-                    Toast.makeText(ShareArticleActivity.this, "Could not load url.",
-                            Toast.LENGTH_SHORT).show();
-                }
-
-            });
+            loadArticle();
         } else {
-            startActivityForResult(new Intent(this, MainActivity.class), 0);
+            startActivityForResult(new Intent(this, LoginActivity.class), 0);
         }
+    }
+
+    private void loadArticle() {
+        final String token = PreferenceManager.getDefaultSharedPreferences(this)
+                .getString("token", null);
+        final String url = getIntent().getStringExtra(Intent.EXTRA_TEXT);
+        linkyardService.newArticle(token, url, new Callback<GetNewArticleResponse>() {
+
+            @Override
+            public void success(GetNewArticleResponse newArticleResponse, Response response) {
+                setTitle(newArticleResponse.getLinkSubmission().getUrl());
+                ShareArticleFragment fragment = (ShareArticleFragment) getSupportFragmentManager()
+                        .findFragmentById(R.id.container);
+                if (fragment != null) {
+                    fragment.setLinkSubmission(newArticleResponse.getLinkSubmission());
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                Log.w(TAG, error.getLocalizedMessage(), error);
+                Toast.makeText(ShareArticleActivity.this, "Could not load url.",
+                        Toast.LENGTH_SHORT).show();
+            }
+
+        });
     }
 
     @Override
@@ -73,12 +84,37 @@ public class ShareArticleActivity extends ActionBarActivity
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode != RESULT_OK) {
             finish();
+        } else {
+            loadArticle();
         }
     }
 
     @Override
-    public void onSave() {
-        Toast.makeText(this, "Save button has been pressed.", Toast.LENGTH_SHORT).show();
+    public void onSave(LinkSubmission submission) {
+
+        Log.d(TAG, "Saving article.");
+
+        final String token = PreferenceManager.getDefaultSharedPreferences(this)
+                .getString("token", null);
+
+        PostArticleRequest request = new PostArticleRequest();
+        request.setToken(token);
+        request.setSubmission(submission);
+
+        linkyardService.newArticle(token, request, new Callback<Void>() {
+
+            @Override
+            public void success(Void aVoid, Response response) {
+                Log.d(TAG, "Article saved");
+                finish();
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                Toast.makeText(ShareArticleActivity.this, "Failed to save article.",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override

@@ -4,8 +4,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.Toast;
 
 import javax.inject.Inject;
@@ -18,10 +16,10 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 
-public class MainActivity extends ActionBarActivity implements LoginFragment.OnLoginListener,
+public class LoginActivity extends ActionBarActivity implements LoginFragment.OnLoginListener,
         Callback<LoginResponse> {
 
-    private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String TAG = LoginActivity.class.getSimpleName();
 
     @Inject
     @Named("linkyardService")
