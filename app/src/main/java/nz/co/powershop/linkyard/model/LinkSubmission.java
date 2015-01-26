@@ -66,6 +66,7 @@ public class LinkSubmission {
 
     public class LinkInteraction {
         private int id;
+        private String name;
         private String checked;
 
         public String getChecked() {
@@ -82,6 +83,14 @@ public class LinkSubmission {
 
         public void setId(int id) {
             this.id = id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
         }
     }
 }
