@@ -16,5 +16,6 @@
     <string name="share_article">Share Article</string>
     <string name="confirm_password">Confirm Password</string>
     <string name="sign_up">Sign Up</string>
+    <string name="empty_link_list">You haven\'t added any links yet.</string>
 
 </resources>

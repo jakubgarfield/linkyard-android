@@ -2,6 +2,7 @@ package nz.co.powershop.linkyard;
 
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.view.View;
 import android.widget.ArrayAdapter;
 
 import nz.co.powershop.linkyard.model.GetArticlesResponse;
@@ -22,5 +23,11 @@ public class LinkListFragment extends ListFragment {
 
     public void setLinks(GetArticlesResponse.Link[] links) {
         setListAdapter(new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, links));
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        setEmptyText(getString(R.string.empty_link_list));
     }
 }
