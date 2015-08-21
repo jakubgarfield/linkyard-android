@@ -8,11 +8,15 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 
+import nz.co.powershop.linkyard.model.LinkInteraction;
 import nz.co.powershop.linkyard.model.LinkSubmission;
+
 
 /**
  * Created by leandro on 23/01/15.
@@ -24,13 +28,13 @@ public class ShareArticleFragment extends Fragment implements View.OnClickListen
     private EditText mDescriptionView;
     private EditText mTitleView;
     private EditText mContentView;
-    private LinkSubmission mLinkSubmission;
     private LinearLayout mInteractionsView;
     private SparseArray<CheckBox> mInteractionViews;
+    private Spinner mDigestsView;
+    private String mUrl;
 
     public static ShareArticleFragment newInstance() {
-        ShareArticleFragment f = new ShareArticleFragment();
-        return f;
+        return new ShareArticleFragment();
     }
 
     @Override
@@ -44,6 +48,7 @@ public class ShareArticleFragment extends Fragment implements View.OnClickListen
         mTitleView = (EditText) v.findViewById(R.id.title);
         mContentView = (EditText) v.findViewById(R.id.content);
         mInteractionsView = (LinearLayout) v.findViewById(R.id.interactions);
+        mDigestsView = (Spinner) v.findViewById(R.id.digest);
 
         v.findViewById(R.id.btn_add).setOnClickListener(this);
 
@@ -64,45 +69,55 @@ public class ShareArticleFragment extends Fragment implements View.OnClickListen
     public void onClick(View v) {
         if (R.id.btn_add == v.getId()) {
             if (mListener != null) {
-                if (mLinkSubmission != null) {
-                    mLinkSubmission.setTags(mTagsView.getText().toString());
-                    mLinkSubmission.setDescription(mDescriptionView.getText().toString());
-                    mLinkSubmission.setTitle(mTitleView.getText().toString());
-                    mLinkSubmission.setContent(mContentView.getText().toString());
 
-                    for (LinkSubmission.LinkInteraction interaction : mLinkSubmission
-                            .getLinkInteractions()) {
-                        CheckBox checkBox = mInteractionViews.get(interaction.getId());
-                        interaction.setChecked(checkBox.isChecked() ? "1" : "0");
-                    }
+                LinkSubmission linkSubmission = new LinkSubmission();
+                linkSubmission.setUrl(mUrl);
+                linkSubmission.setTags(mTagsView.getText().toString());
+                linkSubmission.setDigest((String) mDigestsView.getSelectedItem());
+                linkSubmission.setDescription(mDescriptionView.getText().toString());
+                linkSubmission.setTitle(mTitleView.getText().toString());
+                linkSubmission.setContent(mContentView.getText().toString());
 
-                    mListener.onSave(mLinkSubmission);
+                final int count = mInteractionViews.size();
+                LinkInteraction[] interactions = new LinkInteraction[count];
+                for (int i = 0; i < count; i++) {
+                    CheckBox checkBox = mInteractionViews.valueAt(i);
+                    interactions[i] = (LinkInteraction) checkBox.getTag();
+                    interactions[i].setChecked(checkBox.isChecked() ? "1" : "0");
                 }
+
+                linkSubmission.setLinkInteractions(interactions);
+
+                mListener.onSave(linkSubmission);
             }
         }
     }
 
     public void setLinkSubmission(LinkSubmission linkSubmission) {
-        mLinkSubmission = linkSubmission;
+
+        mUrl = linkSubmission.getUrl();
         mTagsView.setText(linkSubmission.getTags());
         mDescriptionView.setText(linkSubmission.getDescription());
         mTitleView.setText(linkSubmission.getTitle());
         mContentView.setText(linkSubmission.getContent());
+        mDigestsView.setAdapter(new ArrayAdapter<>(getActivity(),
+                android.R.layout.simple_list_item_1, linkSubmission.getOptions()));
+
         mInteractionViews = new SparseArray<>();
-        for (LinkSubmission.LinkInteraction interaction : linkSubmission.getLinkInteractions()) {
+        for (LinkInteraction interaction : linkSubmission.getLinkInteractions()) {
 
             CheckBox checkBox = new CheckBox(getActivity());
+            checkBox.setTag(interaction);
             checkBox.setText(interaction.getName());
             checkBox.setChecked(!interaction.getChecked().equals("0"));
 
             mInteractionsView.addView(checkBox);
-
             mInteractionViews.put(interaction.getId(), checkBox);
         }
 
     }
 
     public interface OnSaveListener {
-        public void onSave(LinkSubmission submission);
+        void onSave(LinkSubmission submission);
     }
 }

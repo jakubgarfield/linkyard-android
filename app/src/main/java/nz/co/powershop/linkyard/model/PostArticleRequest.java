@@ -28,5 +28,4 @@ public class PostArticleRequest {
     public void setSubmission(LinkSubmission submission) {
         this.submission = submission;
     }
-
 }

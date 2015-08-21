@@ -101,10 +101,10 @@ public class ShareArticleActivity extends ActionBarActivity
         request.setToken(token);
         request.setSubmission(submission);
 
-        linkyardService.newArticle(token, request, new Callback<Void>() {
+        linkyardService.postArticle(token, request, new Callback<Response>() {
 
             @Override
-            public void success(Void aVoid, Response response) {
+            public void success(Response response, Response response1) {
                 Log.d(TAG, "Article saved");
                 finish();
             }

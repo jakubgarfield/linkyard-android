@@ -12,41 +12,13 @@ public class LinkSubmission {
     private String url;
     private String title;
     private String content;
+    private String digest;
+
+    @SerializedName("digests")
+    private String[] options;
 
     @SerializedName("link_interactions")
     private LinkInteraction[] linkInteractions;
-
-    public LinkInteraction[] getLinkInteractions() {
-        return linkInteractions;
-    }
-
-    public void setLinkInteractions(LinkInteraction[] linkInteractions) {
-        this.linkInteractions = linkInteractions;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
 
     public String getTags() {
         return tags;
@@ -64,33 +36,51 @@ public class LinkSubmission {
         this.description = description;
     }
 
-    public class LinkInteraction {
-        private int id;
-        private String name;
-        private String checked;
+    public String getUrl() {
+        return url;
+    }
 
-        public String getChecked() {
-            return checked;
-        }
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
-        public void setChecked(String checked) {
-            this.checked = checked;
-        }
+    public String getTitle() {
+        return title;
+    }
 
-        public int getId() {
-            return id;
-        }
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-        public void setId(int id) {
-            this.id = id;
-        }
+    public String getContent() {
+        return content;
+    }
 
-        public String getName() {
-            return name;
-        }
+    public void setContent(String content) {
+        this.content = content;
+    }
 
-        public void setName(String name) {
-            this.name = name;
-        }
+    public String getDigest() {
+        return digest;
+    }
+
+    public void setDigest(String digest) {
+        this.digest = digest;
+    }
+
+    public String[] getOptions() {
+        return options;
+    }
+
+    public void setOptions(String[] options) {
+        this.options = options;
+    }
+
+    public LinkInteraction[] getLinkInteractions() {
+        return linkInteractions;
+    }
+
+    public void setLinkInteractions(LinkInteraction[] linkInteractions) {
+        this.linkInteractions = linkInteractions;
     }
 }

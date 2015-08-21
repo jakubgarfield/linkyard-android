@@ -1,11 +1,14 @@
 package nz.co.powershop.linkyard;
 
+import com.google.gson.Gson;
+
 import javax.inject.Named;
 
 import dagger.Module;
 import dagger.Provides;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
+import retrofit.converter.GsonConverter;
 
 /**
  * Created by leandro on 23/01/15.
@@ -29,6 +32,7 @@ public class RestServicesModule implements RequestInterceptor {
 
         return new RestAdapter.Builder()
                 .setEndpoint(ENDPOINT)
+                .setConverter(new GsonConverter(new Gson()))
                 .setLogLevel(RestAdapter.LogLevel.FULL)
                 .setRequestInterceptor(this)
                 .build()

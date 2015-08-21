@@ -1,5 +1,6 @@
 package nz.co.powershop.linkyard;
 
+
 import nz.co.powershop.linkyard.model.AuthenticationRequest;
 import nz.co.powershop.linkyard.model.GetArticlesResponse;
 import nz.co.powershop.linkyard.model.GetNewArticleResponse;
@@ -7,6 +8,7 @@ import nz.co.powershop.linkyard.model.LoginResponse;
 import nz.co.powershop.linkyard.model.LogoutResponse;
 import nz.co.powershop.linkyard.model.PostArticleRequest;
 import retrofit.Callback;
+import retrofit.client.Response;
 import retrofit.http.Body;
 import retrofit.http.DELETE;
 import retrofit.http.GET;
@@ -19,7 +21,7 @@ import retrofit.http.Query;
 public interface LinkyardService {
 
     @POST("/api/registrations")
-    public void register(@Body AuthenticationRequest request);
+    void register(@Body AuthenticationRequest request);
 
     @POST("/api/sessions")
     void login(@Body AuthenticationRequest request, Callback<LoginResponse> callback);
@@ -32,8 +34,8 @@ public interface LinkyardService {
                     Callback<GetNewArticleResponse> callback);
 
     @POST("/api/links")
-    void newArticle(@Query("auth_token") String token, @Body PostArticleRequest request,
-                    Callback<Void> callback);
+    void postArticle(@Query("auth_token") String token, @Body PostArticleRequest request,
+                     Callback<Response> callback);
 
     @GET("/api/links")
     void getArticles(@Query("auth_token") String token, Callback<GetArticlesResponse> callback);

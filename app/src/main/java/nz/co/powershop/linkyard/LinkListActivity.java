@@ -26,7 +26,6 @@ public class LinkListActivity extends ActionBarActivity {
     @Named("linkyardService")
     LinkyardService linkyardService;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
