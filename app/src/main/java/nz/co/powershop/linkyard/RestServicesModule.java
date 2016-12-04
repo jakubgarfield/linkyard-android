@@ -24,7 +24,7 @@ import retrofit.converter.GsonConverter;
 )
 public class RestServicesModule implements RequestInterceptor {
 
-    public static final String ENDPOINT = "http://programmingdigest.net";
+    public static final String ENDPOINT = "https://programmingdigest.net";
 
     @Provides
     @Named("linkyardService")
